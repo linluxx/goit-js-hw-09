@@ -1,37 +1,44 @@
+import Notiflix from 'notiflix';
+
 const refs = {
   form: document.querySelector('.form'),
-  delay: document.querySelector('input[name=delay]'),
-  step: document.querySelector('input[name=step]'),
-  amount: document.querySelector('input[name=amount]'),
+  amount: document.querySelector('input[name="amount"]'),
+  step: document.querySelector('input[name="step"]'),
+  delayInput: document.querySelector('input[name="delay"]'),
 };
-let promisePosition = 0;
-formData = {};
-
-refs.form.addEventListener('submit', createPromise);
-refs.form.addEventListener('input', onFormInput);
-
-function onFormInput(evt) {
-  formData[evt.target.name] = evt.target.value;
-  console.log(formData);
-}
+refs.form.addEventListener('submit', onFormSubmit);
 
 function createPromise(position, delay) {
-  const shouldResolve = Math.random() > 0.3;
   return new Promise((resolve, reject) => {
-    if (shouldResolve) {
-      resolve(console.log(result));
-      // Fulfill
-    } else {
-      reject(console.log(er));
-      // Reject
-    }
+    setTimeout(() => {
+      const shouldResolve = Math.random() > 0.3;
+      if (shouldResolve) {
+        resolve({ position, delay });
+      } else {
+        reject({ position, delay });
+      }
+    }, delay);
   });
 }
 
-createPromise(3, 2000)
-  .then(({ position, delay }) => {
-    console.log(`✅ Fulfilled promise ${position} in ${delay}ms`);
-  })
-  .catch(({ position, delay }) => {
-    console.log(`❌ Rejected promise ${position} in ${delay}ms`);
-  });
+function onFormSubmit(evt) {
+  evt.preventDefault();
+  let amountValue = +refs.amount.value;
+  let delayValue = +refs.delayInput.value;
+  let stepValue = +refs.step.value;
+
+  for (let i = 1; i <= amountValue; i += 1) {
+    createPromise(i, delayValue)
+      .then(({ position, delay }) => {
+        Notiflix.Notify.success(
+          `✅ Fulfilled promise ${position} in ${delay}ms`
+        );
+      })
+      .catch(({ position, delay }) => {
+        Notiflix.Notify.failure(
+          `❌ Rejected promise ${position} in ${delay}ms`
+        );
+      });
+    delayValue += stepValue;
+  }
+}
