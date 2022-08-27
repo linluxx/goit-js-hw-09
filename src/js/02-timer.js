@@ -32,8 +32,8 @@ const options = {
     } else {
       refs.start.disabled = false;
       refs.input.disabled = true;
+      updateClockFace(convertMs(selectedDateMs - new Date().getTime()));
     }
-    updateClockFace(convertMs(selectedDateMs - new Date().getTime()));
   },
 };
 flatpickr('#datetime-picker', options);
